@@ -8,14 +8,6 @@ function convertToRoman(num) {
   if (num === 0) return "N";
 
   const romans = [
-    { value: 100000, symbol: "C̅" },
-    { value: 90000, symbol: "X̅C̅" },
-    { value: 50000, symbol: "L̅" },
-    { value: 40000, symbol: "X̅L̅" },
-    { value: 10000, symbol: "X̅" },
-    { value: 9000, symbol: "I̅X̅" },
-    { value: 5000, symbol: "V̅" },
-    { value: 4000, symbol: "I̅V̅" },
     { value: 1000, symbol: "M" },
     { value: 900, symbol: "CM" },
     { value: 500, symbol: "D" },
