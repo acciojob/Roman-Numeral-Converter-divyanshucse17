@@ -1,33 +1,34 @@
-const readline = require('readline').createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+const express = require('express');
+const app = express();
+const port = 3000;
 
-function toRoman(num) {
-  if (num === 0) return "N"; // Romans used "N" (nulla) for zero
+app.use(express.json());
+
+function convertToRoman(num) {
+  if (num === 0) return "N";
 
   const romans = [
-    { value: 100000, symbol: "C̅" },   // 100,000
-    { value: 90000, symbol: "X̅C̅" },  // 90,000
-    { value: 50000, symbol: "L̅" },    // 50,000
-    { value: 40000, symbol: "X̅L̅" },  // 40,000
-    { value: 10000, symbol: "X̅" },    // 10,000
-    { value: 9000, symbol: "I̅X̅" },   // 9,000
-    { value: 5000, symbol: "V̅" },     // 5,000
-    { value: 4000, symbol: "I̅V̅" },   // 4,000
-    { value: 1000, symbol: "M" },      // 1,000
-    { value: 900, symbol: "CM" },      // 900
-    { value: 500, symbol: "D" },       // 500
-    { value: 400, symbol: "CD" },      // 400
-    { value: 100, symbol: "C" },       // 100
-    { value: 90, symbol: "XC" },       // 90
-    { value: 50, symbol: "L" },        // 50
-    { value: 40, symbol: "XL" },       // 40
-    { value: 10, symbol: "X" },        // 10
-    { value: 9, symbol: "IX" },        // 9
-    { value: 5, symbol: "V" },         // 5
-    { value: 4, symbol: "IV" },        // 4
-    { value: 1, symbol: "I" }          // 1
+    { value: 100000, symbol: "C̅" },
+    { value: 90000, symbol: "X̅C̅" },
+    { value: 50000, symbol: "L̅" },
+    { value: 40000, symbol: "X̅L̅" },
+    { value: 10000, symbol: "X̅" },
+    { value: 9000, symbol: "I̅X̅" },
+    { value: 5000, symbol: "V̅" },
+    { value: 4000, symbol: "I̅V̅" },
+    { value: 1000, symbol: "M" },
+    { value: 900, symbol: "CM" },
+    { value: 500, symbol: "D" },
+    { value: 400, symbol: "CD" },
+    { value: 100, symbol: "C" },
+    { value: 90, symbol: "XC" },
+    { value: 50, symbol: "L" },
+    { value: 40, symbol: "XL" },
+    { value: 10, symbol: "X" },
+    { value: 9, symbol: "IX" },
+    { value: 5, symbol: "V" },
+    { value: 4, symbol: "IV" },
+    { value: 1, symbol: "I" }
   ];
 
   let result = "";
@@ -40,15 +41,17 @@ function toRoman(num) {
   return result;
 }
 
-// Take input from user
-readline.question('', input => {
-  const num = parseInt(input);
-
-  if (isNaN(num) || num < 0 || num > 100000) {
-    console.log("Invalid Input. Enter number between 0 and 100000.");
-  } else {
-    console.log(toRoman(num));
+app.post('/romanConverter', (req, res) => {
+  const { input } = req.body;
+  
+  if (typeof input !== 'number' || input < 0 || input > 100000) {
+    return res.status(400).json({ error: "Invalid Input. Enter number between 0 and 100000." });
   }
+  
+  const roman = convertToRoman(input);
+  res.json({ roman });
+});
 
-  readline.close();
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
