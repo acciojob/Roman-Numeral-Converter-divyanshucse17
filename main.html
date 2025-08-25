@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Roman Numeral Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --gap: 12px; }
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f7f7fb;
+      color: #222;
+    }
+    .card {
+      width: min(640px, 92vw);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.08);
+      padding: 24px;
+    }
+    h1 { margin: 0 0 var(--gap) 0; font-size: 1.6rem; }
+    p.hint { margin: 0 0 18px 0; color: #555; font-size: .95rem; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+    }
+    input[type="number"] {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+    }
+    button {
+      padding: 10px 14px;
+      border: 0;
+      background: #4f46e5;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .out {
+      margin-top: 10px;
+      padding: 12px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: .5px;
+      font-size: 1.25rem;
+    }
+    .err { color: #b91c1c; font-weight: 600; }
+    details { margin-top: 14px; }
+    code, kbd { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>Roman Numeral Converter</h1>
+    <p class="hint">Enter a number between <strong>0</strong> and <strong>100000</strong>. (0 returns <code>N</code>)</p>
+
+    <div class="row">
+      <input id="num" type="number" min="0" max="100000" placeholder="e.g. 14 or 798" />
+      <button id="convertBtn">Convert</button>
+    </div>
+
+    <div id="result" class="out" aria-live="polite">—</div>
+
+    <details>
+      <summary>Examples</summary>
+      <p>
+        <kbd>14</kbd> → <code>XIV</code><br/>
+        <kbd>798</kbd> → <code>DCCXCVIII</code><br/>
+        <kbd>0</kbd> → <code>N</code><br/>
+        <kbd>5000</kbd> → <code>V̅</code>
+      </p>
+    </details>
+  </main>
+
+  <script>
+    // Convert integer (0..100000) to Roman numeral (upper-case).
+    // Uses overline notation via combining overline (e.g., V̅, X̅) for 4000+.
+    function toRoman(num) {
+      if (num === 0) return "N";
+
+      // Map includes extended values with overline symbols
+      const map = [
+        { value: 100000, symbol: "C̅" },   // 100,000
+        { value: 90000,  symbol: "X̅C̅" }, // 90,000
+        { value: 50000,  symbol: "L̅" },   // 50,000
+        { value: 40000,  symbol: "X̅L̅" }, // 40,000
+        { value: 10000,  symbol: "X̅" },   // 10,000
+        { value: 9000,   symbol: "I̅X̅" }, // 9,000
+        { value: 5000,   symbol: "V̅" },   // 5,000
+        { value: 4000,   symbol: "I̅V̅" }, // 4,000
+        { value: 1000,   symbol: "M" },
+        { value: 900,    symbol: "CM" },
+        { value: 500,    symbol: "D" },
+        { value: 400,    symbol: "CD" },
+        { value: 100,    symbol: "C" },
+        { value: 90,     symbol: "XC" },
+        { value: 50,     symbol: "L" },
+        { value: 40,     symbol: "XL" },
+        { value: 10,     symbol: "X" },
+        { value: 9,      symbol: "IX" },
+        { value: 5,      symbol: "V" },
+        { value: 4,      symbol: "IV" },
+        { value: 1,      symbol: "I" }
+      ];
+
+      let res = "";
+      for (const { value, symbol } of map) {
+        while (num >= value) {
+          res += symbol;
+          num -= value;
+        }
+      }
+      return res.toUpperCase();
+    }
+
+    const input = document.getElementById("num");
+    const btn = document.getElementById("convertBtn");
+    const out = document.getElementById("result");
+
+    function convert() {
+      const raw = input.value.trim();
+      const n = Number(raw);
+
+      if (raw === "" || !Number.isFinite(n) || n < 0 || n > 100000 || !Number.isInteger(n)) {
+        out.textContent = "Invalid input. Enter an integer between 0 and 100000.";
+        out.classList.add("err");
+        return;
+      }
+      out.classList.remove("err");
+      out.textContent = toRoman(n);
+    }
+
+    btn.addEventListener("click", convert);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") convert(); });
+  </script>
+</body>
+</html>
